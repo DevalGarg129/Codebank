@@ -1,20 +1,32 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend service for a GitHub clone implementing authentication, repositories, and core platform features.",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js"
   },
-  "keywords": [],
+  "keywords": [
+    "backend",
+    "github-clone",
+    "nodejs",
+    "express",
+    "mongodb",
+    "cli"
+  ],
   "author": "Deval Garg",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1",
+    "fs": "^0.0.1-security",
     "mongoose": "^9.1.5",
-    "nodemon": "^3.1.11",
+    "path": "^0.12.7",
+    "uuid": "^13.0.0",
     "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }

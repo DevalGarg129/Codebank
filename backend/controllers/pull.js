@@ -1,5 +1,5 @@
-async function PullRepo(){
+async function pullRepo(){
     console.log("Pull command called: changes pulled from remote repository");
 }
 
-module.exports = { PullRepo };
+module.exports = { pullRepo };
