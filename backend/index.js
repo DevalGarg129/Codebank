@@ -1,3 +1,11 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const http = require('http');
+
+
 const yargs = require("yargs");
 const { hideBin } = require("yargs/helpers");
 const { initRepo } = require("./controllers/init.js");
@@ -7,7 +15,9 @@ const { pushRepo } = require("./controllers/push.js");
 const { pullRepo } = require("./controllers/pull.js");
 const { revertRepo } = require("./controllers/revert.js");
 
+dotenv.config();
 yargs(hideBin(process.argv))
+  .command("start", "Start the server", {}, startServer)
   .command("init", "Initialize a new repository", {}, initRepo)
   .command(
     "add <filePath>",
@@ -42,7 +52,25 @@ yargs(hideBin(process.argv))
       describe: "Id of the commit to revert to",
       type: "string",
     });
-  }, revertRepo
+  }, 
+  (argv) => {
+    revertRepo(argv.commitId);
+  }
   )
   .demandCommand(1, "you need at least one command before moving on")
   .help().argv;
+
+
+function startServer(){
+  const app = express();
+  const port = process.env.PORT || 3000;
+
+  app.use(bodyParser.json());
+  app.use(express.json());
+
+  const mongoURI = process.env.MONGODB_URI;
+  mongoose
+    .connect(mongoURI)
+    .then(() => console.log("MONGODB connected successfully....."))
+    .catch((err) => console.error("Unable to connect : ", err));
+}
