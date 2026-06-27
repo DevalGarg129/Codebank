@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
-
+var objectId = require("mongodb").ObjectId;
 dotenv.config();
 
 const uri = process.env.MONGODB_URI;
@@ -17,8 +17,21 @@ async function connectClient() {
     }
 }
 
-const getAllUsers = (req, res) => {
-    res.send("All users fetched!!");
+async function getAllUsers(req, res) {
+    try{
+        await connectClient();
+        const db = client.db("Codebank");
+        const usersCollection = db.collection("users");
+
+        const users = await usersCollection.find({}).toArray();
+        res.json(users);
+    }catch(error){
+        console.error("Error during fetching :", error);
+
+        return res.status(500).json({
+            message: "Server Error"
+        });
+    }
 };
 
 async function signup(req, res) {
@@ -85,8 +98,31 @@ async function signup(req, res) {
     }
 }
 
-const login = (req, res) => {
-    res.send("Logging in!!");
+async function login (req, res) {
+    const { email, password } = req.body;
+    try{
+        await connectClient();
+        const db = client.db("Codebank");
+        const usersCollection = db.collection("users");
+
+        const user = await usersCollection.findOne({ email });
+        if(user){
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(isMatch){
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET_KEY, {
+            expiresIn: "1h",
+        }); 
+        res.json({ token, userId: user._id });
+    }catch(error){
+        console.error("Error during the login: ", error.message);
+        res.status(500).send("Server Error!!");
+    }
 };
 
 const getUserProfile = (req, res) => {
