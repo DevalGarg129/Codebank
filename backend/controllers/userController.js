@@ -165,10 +165,10 @@ const updateUserProfile = (req, res) => {
             { $set: updateFields },
             { returnDocument: "after" }
         );
-        if(!result.value){
+        if(result.deleteCount == 0){
             return res.status(404).json({ message: "user not found" });
         }
-        res.send(result.value);
+        res.json({ message: "user profile deleted" });
     }catch(error){
         console.error("Error during updating user profile: ", error);
         res.status(500).send("Server error");
