@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const dotenv = require("dotenv");
 var objectId = require("mongodb").ObjectId;
 dotenv.config();
@@ -125,16 +125,76 @@ async function login (req, res) {
     }
 };
 
-const getUserProfile = (req, res) => {
-    res.send("Profile fetched!!");
+async function getUserProfile(req, res){
+    const currentID = req.params.id;
+
+    try{
+        await connectClient();
+        const db = client.db("Codebank");
+        const usersCollection = db.collection("users");
+        
+        const user = await usersCollection.findOne({
+            _id: new ObjectId(currentID),
+        });
+
+        if(!user){
+            return res.status(500).json({ message: "invalid credentials" });
+        }
+    }catch(error){
+        console.error("Error during fetching the user profile : ", error.message);
+        res.status(500).send("Server Error!!");
+    }
+    res.send(user, { message: "Profile fetched" }); 
 };
 
 const updateUserProfile = (req, res) => {
+    const currentID = req.params.id;
+    const {email, password} = req.body;
+
+    try{
+        let updateFields = {email};
+        if(password){
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+            updateFields.password = hashedPassword;
+        }
+        const result = await usersCollection.findOneAndUpdate(
+            {
+                _id: new ObjectId(currentID)
+            }, 
+            { $set: updateFields },
+            { returnDocument: "after" }
+        );
+        if(!result.value){
+            return res.status(404).json({ message: "user not found" });
+        }
+        res.send(result.value);
+    }catch(error){
+        console.error("Error during updating user profile: ", error);
+        res.status(500).send("Server error");
+    }
     res.send("Profile updated!!");
 };
 
 const deleteUserProfile = (req, res) => {
-    res.send("Profile deleted!!");
+    const currentID = req.params.id;
+    try{
+        await connectClient();
+        const db = client.db("Codebank");
+        const usersCollection = db.collection("users");
+        
+        const result = await usersCollection.deleteOne({
+            _id: new ObjectId(currentID)
+        });
+
+        if(!result.value){
+            return res.status(404).json({ message: "user not found" });
+        }
+
+    }catch(error){
+        console.error("Erroring while deleting the user profile: ", error.message);
+        res.status(500).send("Server Error");
+    }
 };
 
 module.exports = {
