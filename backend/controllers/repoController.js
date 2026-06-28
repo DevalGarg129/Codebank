@@ -55,7 +55,7 @@ async function getAllRepositories (req, res) {
 async function fetchRepositoryById (req, res) {
     const { id } = req.params;
     try{
-        const repository = Repository.find({ _id: repoID })
+        const repository = await Repository.find({ _id: id })
             .populate("owner")
             .populate("issues")
             .toArray();
@@ -68,12 +68,12 @@ async function fetchRepositoryById (req, res) {
 };
 
 async function fetchRepositoryByName (req, res) {
-    const { repoName } = req.params.name;
+    const { name } = req.params;
     try{
-        const repository = Repository.find({ name: repoName })
+        const repository = Repository.find({ name })
             .populate("owner")
             .populate("issues");
-        
+         
         res.json(repository);
     }catch(error){
         console.error('Error during repo fetching : ', error.message);
@@ -81,19 +81,32 @@ async function fetchRepositoryByName (req, res) {
     }
 };
 
-const fetchRepositriesForCurrentUser = (req, res) => {
-    res.send("Repositry for logged In user fetched!!");
+//Works only for the logged in user
+async function fetchRepositriesForCurrentUser (req, res) {
+    const userID = req.user;
+
+    try{
+        const repositories = await Repository.find({ owner: userId });
+        if(!repositories || repositories.length == 0){
+            return res.status(404).json({ error: "user repositories not found" });
+        }
+
+        res.json({ message: "Repositories Not found!!", repositories });
+    }catch(error){
+        console.error('Error during fetching user repo: ', error.message);
+        res.status(500).send("Server Error");
+    }
 };
 
-const updateRepositryById = (req, res) => {
+async function updateRepositryById (req, res) {
     res.send("Repositry Updated!!");
 }
 
-const toggleVisibilityById = (req, res) => {
+async function toggleVisibilityById (req, res) {
     res.send("Visibility Toggled!!");
 }
 
-const deleteRepositryById = (req, res) => {
+async function deleteRepositryById(req, res) {
     res.send("Repositry deleted!!");
 }
 
