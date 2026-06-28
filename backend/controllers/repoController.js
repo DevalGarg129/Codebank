@@ -99,15 +99,66 @@ async function fetchRepositriesForCurrentUser (req, res) {
 };
 
 async function updateRepositryById (req, res) {
-    res.send("Repositry Updated!!");
+    const { id } = req.params;
+    const { content, description } = req.body;
+
+    try{
+        const repository = await Repository.findById({id});
+        if(!repository){
+            return res.status(404).json({ error: "Repository Not found!!" });
+        }
+
+        repository.content.push(content);
+        repository.description = description;
+
+        const updatedRepository = await repository.save();
+
+        res.json({
+            message: "Repository updated successfully", 
+            repository: updateRepositryById,
+        });
+    }catch(error){
+        console.error('Error during updating user repo: ', error.message);
+        res.status(500).send("Server Error");
+    }
 }
 
 async function toggleVisibilityById (req, res) {
-    res.send("Visibility Toggled!!");
+    const { id } = req.params;
+
+    try{
+        const repository = await Repository.find({id});
+        if(!repository){
+            return res.status(404).json({ error: "Repository Not found!!" });
+        }
+
+        repository.visibility = !repository.visibility;
+
+        const updatedRepository = await repository.save();
+
+        res.json({
+            message: "Repository visibility toggled successfully", 
+            repository: updateRepositryById,
+        });
+    }catch(error){
+        console.error('Error during toggling repositry : ', error.message);
+        res.status(500).send("Server Error");
+    }
 }
 
 async function deleteRepositryById(req, res) {
-    res.send("Repositry deleted!!");
+    const { id } = req.params;
+
+    try{
+        const repository = await Repository.findByIdAndDelete(id);
+        if(!repository){
+            return res.status(404).json({ error: "Repositry not found!!" });
+        }
+        res.json({ message: "Repositry deleted successfully" });
+    }catch(error){
+        console.error('Error during deleting repositry : ', error.message);
+        res.status(500).send("Server Error");
+    }
 }
 
 module.exports = {

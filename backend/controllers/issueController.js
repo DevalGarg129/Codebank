@@ -84,7 +84,7 @@ async function getIssueById (req, res) {
             return res.status(404).json({ error: "Issue not found!!" });
         }
     
-        res.json(issue, { message: "Issue fetched by Id" });
+        res.json(issue);
     }catch(error){
         console.error("Error during getting Issue by Id : ", error.message);
         res.status(500).send("Server Error");
