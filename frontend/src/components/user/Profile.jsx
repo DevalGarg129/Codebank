@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./profile.css";
-import Navbar from "../Navbar";
-import { UnderlineNav } from "@primer/react";
-import { BookIcon, RepoIcon } from "@primer/octicons-react";
+import "./Profile.css";
+import Navbar from "../NavBar";
 import HeatMapProfile from "./HeatMap";
 import { useAuth } from "../../authContext";
 
@@ -34,37 +32,18 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-      <UnderlineNav aria-label="Repository">
-        <UnderlineNav.Item
-          aria-current="page"
-          icon={BookIcon}
-          sx={{
-            backgroundColor: "transparent",
-            color: "white",
-            "&:hover": {
-              textDecoration: "underline",
-              color: "white",
-            },
-          }}
-        >
+      <nav className="profile-nav" aria-label="Repository">
+        <button type="button" className="profile-nav-btn active">
           Overview
-        </UnderlineNav.Item>
-
-        <UnderlineNav.Item
+        </button>
+        <button
+          type="button"
+          className="profile-nav-btn"
           onClick={() => navigate("/repo")}
-          icon={RepoIcon}
-          sx={{
-            backgroundColor: "transparent",
-            color: "whitesmoke",
-            "&:hover": {
-              textDecoration: "underline",
-              color: "white",
-            },
-          }}
         >
           Starred Repositories
-        </UnderlineNav.Item>
-      </UnderlineNav>
+        </button>
+      </nav>
 
       <button
         onClick={() => {

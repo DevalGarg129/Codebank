@@ -147,7 +147,7 @@ async function getUserProfile(req, res){
     res.send(user, { message: "Profile fetched" }); 
 };
 
-const updateUserProfile = (req, res) => {
+async function updateUserProfile(req, res) {
     const currentID = req.params.id;
     const {email, password} = req.body;
 

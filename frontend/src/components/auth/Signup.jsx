@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../authContext";
 
-import { PageHeader } from "@primer/react/drafts";
-import { Box, Button } from "@primer/react";
 import "./auth.css";
 
 import logo from "../../assets/github-mark-white.svg";
@@ -50,13 +48,7 @@ const Signup = () => {
 
       <div className="login-box-wrapper">
         <div className="login-heading">
-          <Box sx={{ padding: 1 }}>
-            <PageHeader>
-              <PageHeader.TitleArea variant="large">
-                <PageHeader.Title>Sign Up</PageHeader.Title>
-              </PageHeader.TitleArea>
-            </PageHeader>
-          </Box>
+          <h2>Sign Up</h2>
         </div>
 
         <div className="login-box">
@@ -99,14 +91,13 @@ const Signup = () => {
             />
           </div>
 
-          <Button
-            variant="primary"
+          <button
             className="login-btn"
             disabled={loading}
             onClick={handleSignup}
           >
             {loading ? "Loading..." : "Signup"}
-          </Button>
+          </button>
         </div>
 
         <div className="pass-box">

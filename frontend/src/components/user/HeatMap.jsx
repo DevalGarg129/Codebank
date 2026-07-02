@@ -1,68 +1,34 @@
-import React, { useEffect, useState } from "react";
-import HeatMap from "@uiw/react-heat-map";
-
-// Function to generate random activity
-const generateActivityData = (startDate, endDate) => {
-  const data = [];
-  let currentDate = new Date(startDate);
-  const end = new Date(endDate);
-
-  while (currentDate <= end) {
-    const count = Math.floor(Math.random() * 50);
-    data.push({
-      date: currentDate.toISOString().split("T")[0], //YYY-MM-DD
-      count: count,
-    });
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return data;
-};
-
-const getPanelColors = (maxCount) => {
-  const colors = {};
-  for (let i = 0; i <= maxCount; i++) {
-    const greenValue = Math.floor((i / maxCount) * 255);
-    colors[i] = `rgb(0, ${greenValue}, 0)`;
-  }
-
-  return colors;
-};
+import React, { useMemo } from "react";
 
 const HeatMapProfile = () => {
-  const [activityData, setActivityData] = useState([]);
-  const [panelColors, setPanelColors] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const startDate = "2001-01-01";
-      const endDate = "2001-01-31";
-      const data = generateActivityData(startDate, endDate);
-      setActivityData(data);
-
-      const maxCount = Math.max(...data.map((d) => d.count));
-      setPanelColors(getPanelColors(maxCount));
-    };
-
-    fetchData();
+  const activityData = useMemo(() => {
+    return Array.from({ length: 35 }, (_, index) => ({
+      id: index,
+      intensity: index % 5 === 0 ? 4 : index % 3 === 0 ? 2 : 1,
+    }));
   }, []);
+
+  const getColor = (intensity) => {
+    const palette = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
+    return palette[intensity] || palette[0];
+  };
 
   return (
     <div>
       <h4>Recent Contributions</h4>
-      <HeatMap
-        className="HeatMapProfile"
-        style={{ maxWidth: "700px", height: "200px", color: "white" }}
-        value={activityData}
-        weekLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
-        startDate={new Date("2001-01-01")}
-        rectSize={15}
-        space={3}
-        rectProps={{
-          rx: 2.5,
-        }}
-        panelColors={panelColors}
-      />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 16px)", gap: "4px", marginTop: "0.75rem" }}>
+        {activityData.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              width: "16px",
+              height: "16px",
+              backgroundColor: getColor(item.intensity),
+              borderRadius: "2px",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 };
